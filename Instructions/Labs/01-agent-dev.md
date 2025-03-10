@@ -168,7 +168,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     ```
 
 1. Review the code, using the comments to understand how it:
-    - Creates a new agent that uses the built-in CodeInterpreter tool
+    - Creates a new agent that uses the built-in code interpreter tool
     - Runs a thread with a prompt message requesting a chart based on the provided data
     - Checks the status of the run in case there's a failure
     - Retrieves the messages from the completed thread and displays the last one sent by the agent.
