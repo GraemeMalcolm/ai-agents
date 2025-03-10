@@ -141,7 +141,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
            role="user",
            content="Create a pie chart for the expense categories in the following data and save it as a png file - " + data,
        )
-       run = project_client.agents.create_and_process_run(thread_id=thread.id, assistant_id=agent.id)
+       run = project_client.agents.create_and_process_run(thread_id=thread.id, agent_id=agent.id)
     
        # Check the run status for failures
        if run.status == "failed":
