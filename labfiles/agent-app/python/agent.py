@@ -6,7 +6,8 @@ from azure.identity import DefaultAzureCredential
 from typing import Any
 from pathlib import Path
 
-DEBUG = False
+# Clear the console
+os.system('cls' if os.name=='nt' else 'clear')
 
 # Load environment variables from .env file
 load_dotenv()

@@ -1,11 +1,11 @@
 ---
 lab:
-    title: 'Develop an AI Agent with Azure AI Agent Service'
+    title: 'Develop an AI Agent that uses a custom function'
 ---
 
-# Develop an AI Agent with Azure AI Agent Service
+# Develop an AI Agent that uses a custom function
 
-In this exercise you'll use Azure AI Agent Service to create a simple agent that creates charts based on data provided to it. The agent uses the built-in *Code Interpreter* tool to dynamically generate the code required to create charts as images, and then saves the resulting chart images.
+In this exercise you'll use Azure AI Agent Service to create an agent that uses a custom function as a tool to complete a task. The specific task this agent will perform is to compose and send an email message (which we'll simulate in this lab by simply printing the email in the console).
 
 This exercise should take approximately **30** minutes to complete.
 
@@ -58,7 +58,7 @@ Now you're ready to deploy a generative AI language model to support your agent.
 
 ## Create an agent client app
 
-Now you're ready to create a client app that uses an agent. Some code has been provided for you in a GitHub repository.
+Now you're ready to create a client app that defines an agent and a custom function. Some code has been provided for you in a GitHub repository.
 
 ### Clone the repo containing the starter code
 
@@ -83,7 +83,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 1. Enter the following command to change the working directory to the folder containing the code files and list them all.
 
     ```
-   cd ai-agents/labfiles/agent-app/python
+   cd ai-agents/labfiles/agent-tool/python
    ls -a -l
     ```
 
@@ -112,68 +112,68 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
 > **Tip**: As you add code, be sure to maintain the correct indentation.
 
-1. Enter the following command to edit the code file that has been provided:
+1. Enter the following command to view the functions code file that has been provided:
 
     ```
-   code agent.py
+   code user_functions.py
+    ```
+
+1. Review the code in this file, which includes a function named **send_email** that simulates sending an email by printing its details to the console.
+1. Close the code file (*CTRL+Q*) without saving any changes.
+1. Enter the following command to edit the agent code file that has been provided:
+
+    ```
+   code agent-tool.py
     ```
 
 1. Review the existing code, which retrieves the application configuration settings and creates an **AIProjectClient** for your Azure AI Foundry project.
-1. Under the comment **Define an agent that uses the CodeInterpreter tool**, add the following code to complete the app:
+1. Under the comment **Define an agent that uses a custom function**, add the following code to complete the app:
 
     ```python
-   # Define an agent that uses the Code Interpreter tool
+   # Define an agent that uses a custom function
    with project_client:
-       code_interpreter = CodeInterpreterTool()
-       agent = project_client.agents.create_agent(
-           model=MODEL_DEPLOYMENT,
-           name="chart-agent",
-           instructions="You are helpful agent that creates charts based on provided data.",
-           tools=code_interpreter.definitions,
-           tool_resources=code_interpreter.resources,
-       )
-       print(f"Using agent: {agent.id}")
-    
-       # Create and run a thread with a prompt message
-       thread = project_client.agents.create_thread()
-       message = project_client.agents.create_message(
-           thread_id=thread.id,
-           role="user",
-           content="Create a pie chart for the expense categories in the following data and save it as a png file - " + data,
-       )
-       run = project_client.agents.create_and_process_run(thread_id=thread.id, agent_id=agent.id)
-    
-       # Check the run status for failures
-       if run.status == "failed":
-           print(f"Run failed: {run.last_error}")
-   
-       # Get messages from the thread and print the last one from the agent
-       messages = project_client.agents.list_messages(thread_id=thread.id)
-       last_msg = messages.get_last_text_message_by_role("assistant")
-       if last_msg:
-           print(f"Last Message: {last_msg.text.value}")
-    
-       # Generate an image file for each image in the messages
-       for image_content in messages.image_contents:
-           file_name = f"{image_content.image_file.file_id}_image_file.png"
-           project_client.agents.save_file(file_id=image_content.image_file.file_id, file_name=file_name)
-    
-       # Get the file path(s) from the messages
-       for file_path_annotation in messages.file_path_annotations:
-           project_client.agents.save_file(file_id=file_path_annotation.file_path.file_id, file_name=Path(file_path_annotation.text).name)
-           print(f"Chart saved as {Path(file_path_annotation.text).name}")
-    
-       # Delete the agent when done
-       project_client.agents.delete_agent(agent.id)
+
+        functions = FunctionTool(user_functions)
+        toolset = ToolSet()
+        toolset.add(functions)
+        
+        agent = project_client.agents.create_agent(
+            model=MODEL_DEPLOYMENT,
+            name="email-agent",
+            instructions="You are an AI assistant that creates and sends email messages.",
+            toolset=toolset
+        )
+        print(f"Created agent, ID: {agent.id}")
+        
+        # Create and run a thread with a prompt message
+        thread = project_client.agents.create_thread()
+        message = project_client.agents.create_message(
+            thread_id=thread.id,
+            role="user",
+            content="Create an itemized list of the expense claim items in the following data and calculate the total: " + data + ". Then send the list and total in an email to expenses@contoso.com with the subject 'Expense Claim'."
+        )
+        run = project_client.agents.create_and_process_run(thread_id=thread.id, agent_id=agent.id)
+        
+        # Check the run status for failures
+        if run.status == "failed":
+            print(f"Run failed: {run.last_error}")
+        
+        # Get messages from the thread and print the last one from the agent
+        messages = project_client.agents.list_messages(thread_id=thread.id)
+        last_msg = messages.get_last_text_message_by_role("assistant")
+        if last_msg:
+            print(f"Last Message: {last_msg.text.value}")
+        
+        # Delete the agent when done
+        project_client.agents.delete_agent(agent.id)
     ```
 
 1. Review the code, using the comments to understand how it:
-    - Creates a new agent that uses the built-in code interpreter tool
-    - Runs a thread with a prompt message requesting a chart based on the provided data
+    - Uses the function tool to add your custom function code to a toolset
+    - Creates an agent that uses the toolset containing your function code
+    - Runs a thread with a prompt message requesting an email message for an expense claim
     - Checks the status of the run in case there's a failure
     - Retrieves the messages from the completed thread and displays the last one sent by the agent.
-    - Creates an image file for each image included in the messages.
-    - Displays the path of each image that was generated.
     - Deletes the agent when it is no longer required.
 
 1. Save the code file (*CTRL+S*) and close the code editor (*CTRL+Q*) when you have finished; keeping the cloud shell command line pane open.
@@ -190,20 +190,16 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 1. After you have signed in, enter the following command to run the application:
 
     ```
-    python agent.py
+    python agent-tool.py
     ```
     
     The application runs using the credentials for your authenticated Azure session to connect to your project and create and run the agent.
 
-1. When the application has finished, and the name of the generated image file is displayed; in the toolbar for the cloud shell pane, use the **Upload/Download files** button to download the image file from your app folder:
-
-    /home/*user*`/ai-agents/labfiles/ai-agent/python/<file_name>.png`
-
-1. Open and view the image that has been generated by your agent.
+1. When the application has finished, review the output, which should include the output from the **send_email** function as well as the final confirmation message from the agent
 
 ## Summary
 
-In this exercise, you used the Azure AI Agent Service SDK to create a client application that uses an AI agent. The agent uses the built-in Code Interpreter tool to run dynamic code that creates images.
+In this exercise, you used the Azure AI Agent Service SDK to create an AI agent that uses a custom function as a tool.
 
 ## Clean up
 
