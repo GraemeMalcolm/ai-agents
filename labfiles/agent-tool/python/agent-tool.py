@@ -13,7 +13,7 @@ load_dotenv()
 PROJECT_CONNECTION_STRING= os.getenv("PROJECT_CONNECTION_STRING")
 MODEL_DEPLOYMENT = os.getenv("MODEL_DEPLOYMENT")
 
-# Create data to be charted
+# Create expense claim data
 data = "Transportation: $2,500, Meals: $560.35, Accommodation: $1234.00, Misc: $125.00"
 
 
