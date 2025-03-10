@@ -122,7 +122,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 1. Under the comment **Define an agent that uses the CodeInterpreter tool**, add the following code to complete the app:
 
     ```python
-   # Define an agent that uses the CodeInterpreter tool
+   # Define an agent that uses the Code Interpreter tool
    with project_client:
        code_interpreter = CodeInterpreterTool()
        agent = project_client.agents.create_agent(
