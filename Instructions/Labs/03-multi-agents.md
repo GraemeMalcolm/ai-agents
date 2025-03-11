@@ -142,7 +142,7 @@ Now you're ready to create a client app that defines an agent and a custom funct
     az login
     ```
     
-1. When prompted, follow the instructions to open the sign-in page in a new tab and enter the authentication code provided and your Azure credentials. Then complete the sign in process in the command line, selecting the subscription containing your Azure Ai Foundry hub if prompted.
+1. When prompted, follow the instructions to open the sign-in page in a new tab and enter the authentication code provided and your Azure credentials. Then complete the sign in process in the command line, selecting the subscription containing your Azure AI Foundry hub if prompted.
 1. After you have signed in, enter the following command to run the application:
 
     ```
