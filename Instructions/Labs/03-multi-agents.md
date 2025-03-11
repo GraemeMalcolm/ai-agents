@@ -99,7 +99,7 @@ Now you're ready to create a client app that defines an agent and a custom funct
 1. In the cloud shell command line pane, enter the following command to install the libraries you'll use:
 
     ```
-   pip install python-dotenv azure-identity azure-ai-projects semantic-kernel[azure]
+   pip install python-dotenv semantic-kernel[azure] azure-identity==1.19.0 azure-ai-projects==1.0.0b5 
     ```
 
 1. Enter the following command to edit the configuration file that has been provided:
