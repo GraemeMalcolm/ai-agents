@@ -76,7 +76,7 @@ Now you're ready to create a client app that defines an agent and a custom funct
    git clone https://github.com/graememalcolm/ai-agents ai-agents
     ```
 
-    > **Tip**: As you paste commands into the cloudshell, the ouput may take up a large amount of the screen buffer and the cursor on the current line may be obscured. You can clear the screen by entering the `cls` command to make it easier to focus on each task.
+    > **Tip**: As you enter commands into the cloudshell, the ouput may take up a large amount of the screen buffer and the cursor on the current line may be obscured. You can clear the screen by entering the `cls` command to make it easier to focus on each task.
 
 1. When the repo has been cloned, enter the following command to install the required version of Python in the cloud shell:
 
