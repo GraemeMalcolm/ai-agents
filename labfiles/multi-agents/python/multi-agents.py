@@ -96,7 +96,7 @@ async def process_expenses():
 
             print("*" * 60)
             print("Chat History (In Descending Order):\n")
-            async for message in chat.get_chat_messages(agent=save_agent):
+            async for message in chat.get_chat_messages():
                 print(f"# {message.role} - {message.name or '*'}: '{message.content}'")
         except Exception as e:
             print(f"Error during chat invocation: {e}")
