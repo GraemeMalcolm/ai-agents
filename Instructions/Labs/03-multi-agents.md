@@ -3,8 +3,6 @@ lab:
     title: 'Develop a multi-agent solution'
 ---
 
-> **UNDER DEVELOPMENT**: This lab is not complete, and does not currently work successfuly.
-
 # Develop a multi-agent solution
 
 In this exercise you'll use Azure AI Agent Service and Semantic Kernel to create a multi-agent solution that combines the capabilities of two agents to generate an expense claim email and create a chart of the expense categories in the claim.
