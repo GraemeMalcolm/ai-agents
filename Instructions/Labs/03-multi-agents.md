@@ -5,7 +5,7 @@ lab:
 
 # Develop a multi-agent solution
 
-In this exercise you'll use Azure AI Agent Service and Semantic Kernel to create a multi-agent solution that combines the capabilities of two agents to generate an expense claim email and create a chart of the expense categories in the claim.
+In this exercise you'll use Azure AI Agent Service and Semantic Kernel to create a multi-agent solution that combines the capabilities of two agents to categorize expense items and generate an expense claim email.
 
 This exercise should take approximately **30** minutes to complete.
 
