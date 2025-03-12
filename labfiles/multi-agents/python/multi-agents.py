@@ -1,18 +1,11 @@
 import os
 import asyncio
 from dotenv import load_dotenv
-from azure.ai.projects import AIProjectClient
 from azure.identity.aio import DefaultAzureCredential
-from azure.ai.projects.models import CodeInterpreterTool
-from azure.ai.projects.models import FunctionTool, ToolSet
-from user_functions import user_functions
-from typing import Any
-from pathlib import Path
 from semantic_kernel.agents import AgentGroupChat
 from semantic_kernel.contents.utils.author_role import AuthorRole
 from semantic_kernel.agents.azure_ai import AzureAIAgent, AzureAIAgentSettings
-from semantic_kernel.agents.strategies.termination.termination_strategy import TerminationStrategy
-from semantic_kernel.agents.strategies import SequentialSelectionStrategy, DefaultTerminationStrategy
+from semantic_kernel.agents.strategies import SequentialSelectionStrategy, KernelFunctionTerminationStrategy, DefaultTerminationStrategy
 from semantic_kernel.contents.chat_message_content import ChatMessageContent
 from semantic_kernel.contents import ChatHistoryTruncationReducer
 
@@ -25,7 +18,17 @@ async def process_expenses():
     ai_agent_settings = AzureAIAgentSettings.create()
 
     # Create expense claim data
-    data = "Transportation: $2,500, Meals: $560.35, Accommodation: $1234.00, Misc: $125.00"
+    data = """{'expenses':[
+                {'date':'01-Mar-2025','description':'flight','amount':675.99},
+                {'date':'07-Mar-2025','description':'taxi','amount':24.00},
+                {'date':'07-Mar-2025','description':'dinner','amount':65.50},
+                {'date':'07-Mar-2025','description':'hotel','amount':125.90},
+                {'date':'08-Mar-2025','description':'lunch','amount':14.70},
+                {'date':'08-Mar-2025','description':'dinner','amount':45.50},
+                {'date':'08-Mar-2025','description':'hotel','amount':125.90},
+                {'date':'09-Mar-2025','description':'taxi','amount':25.90}]
+            }
+            """
 
     # Connect to the Azure AI Foundry project
     async with (
@@ -38,72 +41,55 @@ async def process_expenses():
         ) as project_client,
     ):
 
-        # Define an agent that uses the code interpreter to create charts
-        code_interpreter = CodeInterpreterTool()
-        chart_agent_def = await project_client.agents.create_agent(
+        # Define an agent that categorizes data
+        categorization_agent_def = await project_client.agents.create_agent(
             model=ai_agent_settings.model_deployment_name,
-            name="chart-agent",
-            instructions="You are helpful agent that creates charts based on provided data.",
-            tools=code_interpreter.definitions,
-            tool_resources=code_interpreter.resources,
+            name="categorization_agent",
+            instructions="You categorize data by formatting it as a table an adding a 'Category' column. Return only the table of categorized data."
         )
 
-        chart_agent = AzureAIAgent(
+        categorization_agent = AzureAIAgent(
             client=project_client,
-            definition=chart_agent_def
+            definition=categorization_agent_def
         )
 
-        # Define an agent that uses a custom function to send email
-        functions = FunctionTool(user_functions)
-        toolset = ToolSet()
-        toolset.add(functions)
-
-        email_agent_def = await project_client.agents.create_agent(
+        # Define an agent that creates an expense claim
+        expenses_agent_def = await project_client.agents.create_agent(
             model=ai_agent_settings.model_deployment_name,
-            name="email-agent",
-            instructions="You are an AI assistant that creates and sends email messages.",
-            toolset=toolset
+            name="expenses_agent",
+            instructions="You compose an email to 'expenses@contoso.com' with the subject 'Expense Claim', listing individual expenses, a summary of categorized subtotals, and the grand total. Return the full email including the TO and SUBJECT fields"
         )
 
-        email_agent = AzureAIAgent(
+        expenses_agent = AzureAIAgent(
             client=project_client,
-            definition=email_agent_def
+            definition=expenses_agent_def
         )
 
         # Create a group chat with the two agents
-        history_reducer = ChatHistoryTruncationReducer(target_count=5)
+        history_reducer = ChatHistoryTruncationReducer(target_count=3)
         chat = AgentGroupChat(
-            agents=[email_agent, chart_agent],
-            selection_strategy=SequentialSelectionStrategy(history_reducer=history_reducer),
-            termination_strategy=DefaultTerminationStrategy(maximum_iterations=2, history_reducer=history_reducer),
-            
-            #termination_strategy=ApprovalTerminationStrategy(agents=[chart_agent], maximum_iterations=10)
-            #termination_strategy=TerminationStrategy(maximum_iterations=10)
+            agents=[expenses_agent, categorization_agent],
+            selection_strategy=SequentialSelectionStrategy(initial_agent=categorization_agent, history_reducer=history_reducer),
+            termination_strategy=DefaultTerminationStrategy(maximum_iterations=2, history_reducer=history_reducer)
         )
 
         try:
             # Add the user input as a chat message
-            prompt_message = "Send an email containing an itemized list of the expense claim items in the following data as well as the total to expenses@contoso.com with the subject 'Expense Claim' - " + data + ". Then create a pie chart of the expense categories and save it as a png file."
+            prompt_message = "Categorise the following expenses by the categories 'Meals', 'Transportation', and 'Accommodation' - " + data + ". Then create an expenses claim email that includes table of categorized items and a total."
             await chat.add_chat_message(
                 ChatMessageContent(role=AuthorRole.USER, content=prompt_message)
             )
-            print(f"# User: '{prompt_message}'")
+            print(f"# AuthorRole.USER: \n{prompt_message}\n")
 
             async for content in chat.invoke():
-                print(f"# {content.role} - {content.name or '*'}: '{content.content}'")
+                print(f"# {content.role} - {content.name or '*'}: \n{content.content}\n")
 
-            print(f"# IS COMPLETE: {chat.is_complete}")
-
-            print("*" * 60)
-            print("Chat History (In Descending Order):\n")
-            async for message in chat.get_chat_messages():
-                print(f"# {message.role} - {message.name or '*'}: '{message.content}'")
         except Exception as e:
             print(f"Error during chat invocation: {e}")
         finally:
             await chat.reset()
-            await project_client.agents.delete_agent(email_agent.id)
-            await project_client.agents.delete_agent(chart_agent.id)
+            await project_client.agents.delete_agent(expenses_agent.id)
+            await project_client.agents.delete_agent(categorization_agent.id)
 
 async def main():
     # Clear the console
@@ -111,13 +97,6 @@ async def main():
 
     # Run the async agent code
     await process_expenses()
-
-class ApprovalTerminationStrategy(TerminationStrategy):
-    """A strategy for determining when an agent should terminate."""
-
-    async def should_agent_terminate(self, agent, history):
-        """Check if the agent should terminate."""
-        return "chart" in history[-1].content.lower()
 
 if __name__ == "__main__":
     asyncio.run(main())

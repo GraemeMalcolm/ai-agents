@@ -120,19 +120,19 @@ Now you're ready to create a client app that defines an agent and a custom funct
 1. Enter the following command to view the functions code file that has been provided:
 
     ```
-   code user_functions.py
-    ```
-
-1. Review the code in this file, which includes a function named **send_email** that simulates sending an email by printing its details to the console.
-1. Close the code file (*CTRL+Q*) without saving any changes.
-1. Enter the following command to edit the agent code file that has been provided:
-
-    ```
    code multi-agents.py
     ```
 
-1. Review the code, which implements a multi-agent chat.
-1. Close the code editor (*CTRL+Q*) when you have finished; keeping the cloud shell command line pane open.
+1. Review the code, which implements a multi-agent chat by performing the following tasks:
+    - Loading the configuration settings into a Semantic Kernel **AzureAIAgentSettings** object.
+    - Defining a set of expense data that the agents will process (in a real app, this would be loaded from a file or entered by a user).
+    - Connecting to your Azure AI Foundry project using the Azure credentials under which the app is running.
+    - Defining and creating to **AzureAIAgent** objects:
+        - *categorization_agent*: used to categorize data.
+        - *expenses_agent*: used to compose an expense claim email.
+    - Creating an **AgentGroupChat** that includes both agents as well as a selection strategy(used to choose which agent the conversation should flow to) and a termination strategy (used to determine when the conversation should end)
+    - Invoking the group chat and printing the messages that are exchanged in it.
+1. Close the code editor (*CTRL+Q*) without saving any changes; keeping the cloud shell command line pane open.
 
 ### Sign into Azure and run the app
 
@@ -152,8 +152,6 @@ Now you're ready to create a client app that defines an agent and a custom funct
     The application runs using the credentials for your authenticated Azure session to connect to your project and create and run the agents.
 
 1. When the application has finished, review the output.
-
-    ***ERROR: Invalid combination of arguments provided.***
 
 ## Summary
 
