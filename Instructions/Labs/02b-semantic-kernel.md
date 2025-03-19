@@ -31,7 +31,7 @@ Let's start by creating an Azure AI Foundry project.
     - **Connect Azure AI Services or Azure OpenAI**: *Create a new AI Services resource with an appropriate name (for example, `my-ai-services`) or use an existing one*
     - **Connect Azure AI Search**: Skip connecting
 
-   > \* At the time of writing, the OpenAI *GPT-35-Turbo* model we're going to use in this exercise is available for use with agents in these regions. You can check the latest regional availability for specific models in the [Azure AI Foundry documentation](https://learn.microsoft.com/azure/ai-foundry/how-to/deploy-models-serverless-availability#region-availability). In the event of a regional quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
+   > \* At the time of writing, the OpenAI *gpt-35-turbo* model we're going to use in this exercise is available for use with agents in these regions. You can check the latest regional availability for specific models in the [Azure AI Foundry documentation](https://learn.microsoft.com/azure/ai-foundry/how-to/deploy-models-serverless-availability#region-availability). In the event of a regional quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
 
 1. Select **Next** and review your configuration. Then select **Create** and wait for the process to complete.
 1. When your project is created, close any tips that are displayed and review the project page in Azure AI Foundry portal, which should look similar to the following image:
@@ -47,7 +47,7 @@ Now you're ready to deploy a generative AI language model to support your agent.
 1. In the toolbar at the top right of your Azure AI Foundry project page, use the **Preview features** icon to ensure that the **Deploy models to Azure AI model inference service** feature is enabled. This feature ensures your model is deployed to the Azure AI Inference service.
 1. In the pane on the left for your project, in the **My assets** section, select the **Models + endpoints** page.
 1. In the **Models + endpoints** page, in the **Model deployments** tab, in the **+ Deploy model** menu, select **Deploy base model**.
-1. Search for the **GPT-35-Turbo** model in the list, and then select and confirm it.
+1. Search for the `gpt-35-turbo` model in the list, and then select and confirm it.
 1. Deploy the model with the following settings by selecting **Customize** in the deployment details:
 
     **<font color="red">It's important to choose exactly these settings - otherwise your agent may not work</font>**
