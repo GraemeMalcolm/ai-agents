@@ -50,7 +50,7 @@ Now you're ready to deploy a generative AI language model to support your agent.
 1. Search for the **GPT-35-Turbo** model in the list, and then select and confirm it.
 1. Deploy the model with the following settings by selecting **Customize** in the deployment details:
 
-    <font color="red">**It's important to choose exactly these settings - otherwise your agent may not work**</font>
+    **<font color="red">It's important to choose exactly these settings - otherwise your agent may not work</font>**
 
     - **Deployment name**: *A unique name for your model deployment - for example `gpt-35-turbo` (remember the name you choose - you'll need it later)*
     - **Deployment type**: Standard
@@ -92,7 +92,7 @@ Now you're ready to create a client app that defines an agent and a custom funct
 
 1. After the installation is complete, in the cloud shell toolbar, in the **Settings** menu, select **Go to Classic version** (this starts a new session, and is required to use the code editor).
 
-    <font color="red">**Ensure you've switched to the classic version of the cloud shell and a new session has started before continuing.**</font>
+    **<font color="red">Ensure you've switched to the classic version of the cloud shell and a new session has started before continuing.</font>**
 
 1. Enter the following command to change the working directory to the folder containing the code files and list them all.
 
@@ -215,7 +215,7 @@ Now you're ready to create a client app that defines an agent and a custom funct
 
 ### Sign into Azure and run the app
 
-<font color="red">**You must sign into Azure - even though the cloud shell session is already authenticated.**</font>
+**<font color="red">You must sign into Azure - even though the cloud shell session is already authenticated.</font>**
 
 1. In the cloud shell command line pane beneath the code editor, enter the following command to sign into Azure.
 
