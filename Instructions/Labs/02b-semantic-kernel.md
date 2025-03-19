@@ -58,7 +58,7 @@ Now you're ready to deploy a generative AI language model to support your agent.
     - **Connected AI resource**: *Select your Azure OpenAI resource connection*
     - **Tokens per Minute Rate Limit (thousands)**: 10K
     - **Content filter**: DefaultV2
-    - **Enable dynamic quota**: Disabled
+    - **Enable dynamic quota**: Enabled
       
     > **Note**: Reducing the TPM helps avoid over-using the quota available in the subscription you are using. 10,000 TPM should be sufficient for the data used in this exercise. If you later experience a *Rate Limit Reached* error, you can edit the model deployment to increase this value.
 
