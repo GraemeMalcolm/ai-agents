@@ -1,9 +1,9 @@
 ---
 lab:
-    title: 'Develop an AI agent with Azure AI Foundry and Semantic Kernel'
+    title: 'Develop an Azure AI agent with the Semantic Kernel SDK'
 ---
 
-# Develop an Azure AI agent with Semantic Kernel
+# Develop an Azure AI agent with the Semantic Kernel SDK
 
 In this exercise you'll use Azure AI Agent Service and Semantic Kernel to create an AI agent that creates an expense claim email.
 
