@@ -174,14 +174,14 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     ```
 
 1. Review the code, using the comments to understand how it:
-    - Creates a new agent that uses the built-in code interpreter tool
-    - Runs a thread with a prompt message requesting a chart based on the provided data
+    - Creates a new agent that uses the built-in code interpreter tool and which has explicit instructions.
+    - Runs a thread with a prompt message from the user along with the data to be analyzed.
     - Checks the status of the run in case there's a failure
     - Retrieves the messages from the completed thread and displays the last one sent by the agent.
     - Saves each file that was generated.
     - Deletes the agent when it is no longer required.
 
-1. Save the code file (*CTRL+S*) and close the code editor (*CTRL+Q*) when you have finished; keeping the cloud shell command line pane open.
+1. Save the code file (*CTRL+S*) when you have finished. You can also close the code editor (*CTRL+Q*); though you may want to keep it open in case you need to make any edits to the code you added. In either case, keep the cloud shell command line pane open.
 
 ### Sign into Azure and run the app
 
