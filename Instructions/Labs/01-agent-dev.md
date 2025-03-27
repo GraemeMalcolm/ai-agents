@@ -5,7 +5,7 @@ lab:
 
 # Develop an AI Agent with Azure AI Agent Service
 
-In this exercise you'll use Azure AI Agent Service to create a simple agent that creates charts based on data provided to it. The agent uses the built-in *Code Interpreter* tool to dynamically generate the code required to create charts as images, and then saves the resulting chart images.
+In this exercise you'll use Azure AI Agent Service to create a simple agent that analyzes data and creates charts. The agent uses the built-in *Code Interpreter* tool to dynamically generate the code required to create charts as images, and then saves the resulting chart images.
 
 This exercise should take approximately **30** minutes to complete.
 
