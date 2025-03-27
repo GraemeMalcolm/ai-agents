@@ -69,6 +69,8 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
 1. In the cloud shell toolbar, in the **Settings** menu, select **Go to Classic version** (this is required to use the code editor).
 
+    **<font color="red">Ensure you've switched to the classic version of the cloud shell before continuing.</font>**
+
 1. In the PowerShell pane, enter the following commands to clone the GitHub repo containing the code files for this exercise:
 
     ```
@@ -142,7 +144,8 @@ Now you're ready to create a client app that uses an agent. Some code has been p
                print("Please enter a prompt.")
                continue
     
-           # Create and run a thread with a prompt message
+           # Create and run a thread with a user prompt message
+           # (the prompt includes the data from the file)
            thread = project_client.agents.create_thread()
            message = project_client.agents.create_message(
                thread_id=thread.id,
@@ -187,6 +190,8 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     ```
     az login
     ```
+
+    **<font color="red">You must sign into Azure - even though the cloud shell session is already authenticated.</font>** 
     
 1. When prompted, follow the instructions to open the sign-in page in a new tab and enter the authentication code provided and your Azure credentials. Then complete the sign in process in the command line, selecting the subscription containing your Azure AI Foundry hub if prompted.
 1. After you have signed in, enter the following command to run the application:
@@ -210,17 +215,17 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     ```
    Create a pie chart by category.
     ```
-    
+
 1. The agent should selectively use the code interpreter tool as required, in this case to create a chart based on your request.
 
 1. Enter `quit` to end the application.
 
-1. When the application has finished, use the **download** command to download each .png file that was generated. For example:
+1. When the application has finished, use the **download** command to download each .png file that was saved in the app folder. For example:
 
     ```
    download ./<file_name>.png
     ```
-    
+
     The download command creates a popup link at the bottom right of your browser, which you can click to download and open the file.
 
 ## Summary
