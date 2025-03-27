@@ -116,7 +116,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
    code agent.py
     ```
 
-1. Review the existing code, which retrieves the application configuration settings and creates an **AIProjectClient** for your Azure AI Foundry project.
+1. Review the existing code, which retrieves the application configuration settings, loads data from *data.txt* to be analyzed, and creates an **AIProjectClient** for your Azure AI Foundry project.
 1. Under the comment **Define an agent that uses the CodeInterpreter tool**, add the following code to complete the app:
 
     ```python
@@ -125,41 +125,46 @@ Now you're ready to create a client app that uses an agent. Some code has been p
        code_interpreter = CodeInterpreterTool()
        agent = project_client.agents.create_agent(
            model=MODEL_DEPLOYMENT,
-           name="chart-agent",
-           instructions="You are helpful agent that creates charts based on provided data.",
+           name="data-agent",
+           instructions="You are an AI agent that analyzes data. If the user requests a chart, you create it and save it as a .png file.",
            tools=code_interpreter.definitions,
            tool_resources=code_interpreter.resources,
        )
-       print(f"Using agent: {agent.id}")
+       print(f"Using agent: {agent.name}")
     
-       # Create and run a thread with a prompt message
-       thread = project_client.agents.create_thread()
-       message = project_client.agents.create_message(
-           thread_id=thread.id,
-           role="user",
-           content="Create a pie chart for the expense categories in the following data and save it as a png file - " + data,
-       )
-       run = project_client.agents.create_and_process_run(thread_id=thread.id, agent_id=agent.id)
+       # Loop until the user types 'quit'
+       while True:
+           # Get input text
+           user_prompt = input("Enter a prompt (or type 'quit' to exit): ")
+           if user_prompt.lower() == "quit":
+               break
+           if len(user_prompt) == 0:
+               print("Please enter a prompt.")
+               continue
     
-       # Check the run status for failures
-       if run.status == "failed":
-           print(f"Run failed: {run.last_error}")
-   
-       # Get messages from the thread and print the last one from the agent
-       messages = project_client.agents.list_messages(thread_id=thread.id)
-       last_msg = messages.get_last_text_message_by_role("assistant")
-       if last_msg:
-           print(f"Last Message: {last_msg.text.value}")
+           # Create and run a thread with a prompt message
+           thread = project_client.agents.create_thread()
+           message = project_client.agents.create_message(
+               thread_id=thread.id,
+               role="user",
+               content=f"{user_prompt} - {data}",
+           )
+           run = project_client.agents.create_and_process_run(thread_id=thread.id, agent_id=agent.id)
     
-       # Generate an image file for each image in the messages
-       for image_content in messages.image_contents:
-           file_name = f"{image_content.image_file.file_id}_image_file.png"
-           project_client.agents.save_file(file_id=image_content.image_file.file_id, file_name=file_name)
+           # Check the run status for failures
+           if run.status == "failed":
+               print(f"Run failed: {run.last_error}")
     
-       # Get the file path(s) from the messages
-       for file_path_annotation in messages.file_path_annotations:
-           project_client.agents.save_file(file_id=file_path_annotation.file_path.file_id, file_name=Path(file_path_annotation.text).name)
-           print(f"Chart saved as {Path(file_path_annotation.text).name}")
+           # Get messages from the thread and print the last one from the agent
+           messages = project_client.agents.list_messages(thread_id=thread.id)
+           last_msg = messages.get_last_text_message_by_role("assistant")
+           if last_msg:
+               print(f"Last Message: {last_msg.text.value}")
+    
+           # Get any files from the messages and save them to the app folder
+           for file_path_annotation in messages.file_path_annotations:
+               project_client.agents.save_file(file_id=file_path_annotation.file_path.file_id, file_name=Path(file_path_annotation.text).name)
+               print(f"File saved as {Path(file_path_annotation.text).name}")
     
        # Delete the agent when done
        project_client.agents.delete_agent(agent.id)
@@ -170,8 +175,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     - Runs a thread with a prompt message requesting a chart based on the provided data
     - Checks the status of the run in case there's a failure
     - Retrieves the messages from the completed thread and displays the last one sent by the agent.
-    - Creates an image file for each image included in the messages.
-    - Displays the path of each image that was generated.
+    - Saves each file that was generated.
     - Deletes the agent when it is no longer required.
 
 1. Save the code file (*CTRL+S*) and close the code editor (*CTRL+Q*) when you have finished; keeping the cloud shell command line pane open.
@@ -193,11 +197,31 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     
     The application runs using the credentials for your authenticated Azure session to connect to your project and create and run the agent.
 
-1. When the application has finished, and the name of the generated image file is displayed; in the toolbar for the cloud shell pane, use the **Upload/Download files** button to download the image file from your app folder:
+1. When prompted, view the data that the app has loaded from the *data.txt* text file. Then enter a prompt such as:
 
-    /home/*user*`/ai-agents/labfiles/ai-agent/python/<file_name>.png`
+    ```
+   What's the highest value category?
+    ```
 
-1. Open and view the image that has been generated by your agent.
+    > **Tip**: If the app fails because the rate limit is exceeded. Wait a few seconds and try the prompt again.
+
+1. View the response. Then enter another prompt, this time requesting a chart:
+
+    ```
+   Create a pie chart by category.
+    ```
+    
+1. The agent should selectively use the code interpreter tool as required, in this case to create a chart based on your request.
+
+1. Enter `quit` to end the application.
+
+1. When the application has finished, use the **download** command to download each .png file that was generated. For example:
+
+    ```
+   download ./<file_name>.png
+    ```
+    
+    The download command creates a popup link at the bottom right of your browser, which you can click to download and open the file.
 
 ## Summary
 
